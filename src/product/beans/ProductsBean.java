@@ -1,20 +1,11 @@
 package product.beans;
 
-import utilities.PaginationHelper;
-
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
-import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-/**
- *
- * @author Leonard
- */
 @Named
 @ViewScoped
 public class ProductsBean implements Serializable {
@@ -22,16 +13,51 @@ public class ProductsBean implements Serializable {
     private ProductDataModel productDataModel;
     ArrayList<Products> productData = new ArrayList<>();
     ArrayList<Products> purchasedProducts = new ArrayList<>();
-    double totalPrice = 0;
-    String username = "";
-    String password = "";
+    ArrayList<User> users = new ArrayList<>();
+    private double totalPrice = 0;
+    private String username = "";
+    private String password = "";
 
     public ProductsBean(){
+        users.add(new User("pablo", "123"));
+        users.add(new User("diego", "123"));
+        System.out.println("users");
+        System.out.println(users);
         try {
             readProductData();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean userRegistered(String username) {
+        boolean contains = false;
+        for(User u : users) {
+            if(username.equals(u.getUsername())){
+                contains = true;
+            }
+        }
+        System.out.println("user registered");
+        return contains;
+    }
+
+    public boolean userMatchPwd(String username, String password){
+        boolean match = false;
+
+        for(User user : users) {
+            if(user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                match = true;
+            }
+        }
+
+        return match;
+    }
+
+    public String loginUser(){
+        if(userRegistered(username) && userMatchPwd(username, password) && username != "" && password != ""){
+            return "productDetails";
+        }
+        return "errorPage";
     }
 
     public ArrayList<Products> getPurchasedProducts() {
@@ -111,7 +137,6 @@ public class ProductsBean implements Serializable {
     }
 
     public void setProductUnits(Products p){
-        System.out.println("entered!!!");
         for(Products products : productData){
             if(products.getSerialNum().equals(p.getSerialNum())){
                 products.setPurchaseNum(p.getPurchaseNum());
@@ -122,7 +147,6 @@ public class ProductsBean implements Serializable {
 
     public void saveProductData(){
         for(Products p: productData){
-            System.out.println("datos");
             System.out.println(p.getTotalPrice());
         }
     }

@@ -9,7 +9,7 @@
 </h:head>
 
 <h:body>
-    <h:outputText value="#{msgs.indexPageTitle}" styleClass="emphasis"/>
+    <h:outputText value="#{msgs.indexPageTitle}"/>
     <h:form>
         <h:panelGrid columns="2">
             #{msgs.usernamePrompt}
@@ -21,7 +21,7 @@
             <h:inputText value="#{productsBean.password}"/>
         </h:panelGrid>
         <h:panelGrid rows="2">
-            <h:commandButton value="#{msgs.loginPrompt}" action="productDetails"/>
+            <h:commandButton value="#{msgs.loginPrompt}" action="#{productsBean.loginUser()}"/>
         </h:panelGrid>
     </h:form>
     <h:messages/>
