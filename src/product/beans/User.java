@@ -36,4 +36,9 @@ public class User {
     public void setPurchasedProducts(ArrayList<Products> purchasedProducts) {
         this.purchasedProducts = purchasedProducts;
     }
+
+    @Override
+    public String toString(){
+        return username;
+    }
 }

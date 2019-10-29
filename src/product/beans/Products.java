@@ -64,4 +64,9 @@ public class Products {
     public void setTotalPrice() {
         this.totalPrice = purchaseNum * pricePerUnit;
     }
+
+    @Override
+    public String toString(){
+        return productName;
+    }
 }

@@ -9,7 +9,7 @@
 <h:body>
     <h:form>
         <div style="overflow:auto; width:100%; height:160px;">
-            <h:dataTable value="#{productsBean.productData}" var="t" border="1">
+            <h:dataTable value="#{userManager.products}" var="t" border="1">
                 <h:column>
                     <f:facet name="header">Serial Number</f:facet>
                     #{t.serialNum}
@@ -29,7 +29,7 @@
                 <h:column>
                     <f:facet name="header">Amount to Purchase</f:facet>
                     <h:inputText value="#{t.purchaseNum}" size="10" required="true">
-                        <f:ajax event="blur" render="result" listener="#{productsBean.setProductUnits(t)}"/>
+                        <f:ajax event="blur" render="result" listener="#{userManager.setProductUnits(t)}"/>
                     </h:inputText>
 
                 </h:column>
@@ -39,13 +39,13 @@
                 </h:column>
             </h:dataTable>
         </div>
-        <h:commandButton value="Calculate Total" action="#{productsBean.saveProductData}">
+        <h:commandButton value="Calculate Total" action="#{userManager.saveProductData}">
             <f:ajax event="click" render="totalPrice"/>
         </h:commandButton>
         <br/>
-        <h:commandButton value="Purchase Items" action="#{productsBean.setPurchasedProducts(productsBean.getProductData())}"/>
+        <h:commandButton value="Purchase Items" action="#{userManager.setPurchasedProducts(userManager.products)}"/>
         <br/>
-        <h:outputText value="Total: " /><h:outputText id="totalPrice" value="#{productsBean.getTotalPrice()}" />
+        <h:outputText value="Total: " /><h:outputText id="totalPrice" value="#{userManager.getTotalPrice()}" />
     </h:form>
     <br/>
     <br/>
@@ -53,7 +53,7 @@
     <br/>
     <h:form>
         <div style="overflow:auto; width:100%; height:160px;">
-            <h:dataTable value="#{productsBean.purchasedProducts}" var="t" border="1">
+            <h:dataTable value="#{userManager.purchasedProducts}" var="t" border="1">
                 <h:column>
                     <f:facet name="header">Serial Number</f:facet>
                     #{t.serialNum}
@@ -81,7 +81,7 @@
             </h:dataTable>
         </div>
         <h:outputText value="Total: " />
-        <h:outputText value="#{productsBean.getTotalPrice()}" />
+        <h:outputText value="#{userManager.getTotalPrice()}" />
     </h:form>
 </h:body>
 </html>
