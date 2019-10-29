@@ -8,34 +8,75 @@
 </h:head>
 <h:body>
     <h:form>
-        <div style="overflow:auto; width:100%; height:145px;">
-            <h:dataTable value="#{productsBean.productData.entrySet()}" var="t" border="1">
+        <div style="overflow:auto; width:100%; height:160px;">
+            <h:dataTable value="#{productsBean.productData}" var="t" border="1">
                 <h:column>
                     <f:facet name="header">Serial Number</f:facet>
-                    #{t.key}
+                    #{t.serialNum}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Product Name</f:facet>
-                    #{t.value.productName}
+                    #{t.productName}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Price per Unit</f:facet>
-                    #{t.value.pricePerUnit}
+                    #{t.pricePerUnit}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Current Stock</f:facet>
-                    #{t.value.stockNum}
+                    #{t.stockNum}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Amount to Purchase</f:facet>
-                    <h:inputText value="#{t.value.purchaseNum}" size="10" required="true">
-                        <f:ajax event="blur" render="result"/>
+                    <h:inputText value="#{t.purchaseNum}" size="10" required="true">
+                        <f:ajax event="blur" render="result" listener="#{productsBean.setProductUnits(t)}"/>
                     </h:inputText>
 
                 </h:column>
                 <h:column>
                     <f:facet name="header">Total Price</f:facet>
-                    <h:outputText id="result" value="#{t.value.pricePerUnit * t.value.purchaseNum}" />
+                    <h:outputText id="result" value="#{t.getTotalPrice()}"/>
+                </h:column>
+            </h:dataTable>
+        </div>
+        <h:commandButton value="Calculate Total" action="#{productsBean.saveProductData}">
+            <f:ajax event="click" render="totalPrice"/>
+        </h:commandButton>
+        <br/>
+        <h:commandButton value="Purchase Items" action="#{productsBean.setPurchasedProducts(productsBean.getProductData())}"/>
+        <br/>
+        <h:outputText value="Total: " /><h:outputText id="totalPrice" value="#{productsBean.getTotalPrice()}" />
+    </h:form>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <h:form>
+        <div style="overflow:auto; width:100%; height:160px;">
+            <h:dataTable value="#{productsBean.purchasedProducts}" var="t" border="1">
+                <h:column>
+                    <f:facet name="header">Serial Number</f:facet>
+                    #{t.serialNum}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Product Name</f:facet>
+                    #{t.productName}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Price per Unit</f:facet>
+                    #{t.pricePerUnit}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Current Stock</f:facet>
+                    #{t.stockNum}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Amount to Purchase</f:facet>
+                    <h:outputText value="#{t.purchaseNum}" size="10" required="true"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Total Price</f:facet>
+                    <h:outputText value="#{t.totalPrice}"/>
                 </h:column>
             </h:dataTable>
         </div>

@@ -61,7 +61,7 @@ public class Products {
         return totalPrice;
     }
 
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setTotalPrice() {
+        this.totalPrice = purchaseNum * pricePerUnit;
     }
 }
