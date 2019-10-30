@@ -28,24 +28,16 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">Amount to Purchase</f:facet>
-                    <h:inputText value="#{t.purchaseNum}" size="10" required="true">
-                        <f:ajax event="blur" render="result" listener="#{user.setProductUnits(t)}"/>
-                    </h:inputText>
-
+                    <h:outputText value="#{t.purchaseNum}" size="10" required="true"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">Total Price</f:facet>
-                    <h:outputText id="result" value="#{t.getTotalPrice()}"/>
+                    <h:outputText value="#{t.totalPrice}"/>
                 </h:column>
             </h:dataTable>
         </div>
-        <h:commandButton value="Calculate Total">
-            <f:ajax event="click" render="totalPrice"/>
-        </h:commandButton>
-        <br/>
-        <h:commandButton value="Purchase Items" action="purchasedItems" actionListener="#{user.viewProductData()}"/>
-        <br/>
-        <h:outputText value="Total: " /><h:outputText id="totalPrice" value="#{user.getTotalPrice()}" />
+        <h:outputText value="Total: " />
+        <h:outputText value="#{user.getTotalPrice()}" />
     </h:form>
 </h:body>
 </html>

@@ -1,28 +1,23 @@
 package product.beans;
 
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-@Named
+@Named("user")
 @SessionScoped
 public class UserManager implements Serializable {
-    private ProductsBean productsBean = new ProductsBean();
-    private ArrayList<Products> products = new ArrayList<>();
+    @Inject private ProductsBean productsBean;
+
     private ArrayList<Products> purchasedProducts = new ArrayList<>();
-    private ArrayList<User> users = new ArrayList<>();
     private ProductDataModel productDataModel;
     private String username = "";
     private String password = "";
 
     public UserManager(){
-        products = productsBean.getProductData();
-        users = productsBean.getUsers();
-        users.add(new User("Pablo", "123"));
-        users.add(new User("Adrian", "123"));
-
         try {
             readProductData();
         } catch (IOException e) {
@@ -39,11 +34,11 @@ public class UserManager implements Serializable {
     }
 
     public ArrayList<Products> getProducts() {
-        return products;
+        return productsBean.getProductData();
     }
 
     public void setProducts(ArrayList<Products> products) {
-        this.products = products;
+        this.productsBean.setProductData(products);
     }
 
     public ArrayList<Products> getPurchasedProducts() {
@@ -64,30 +59,36 @@ public class UserManager implements Serializable {
 
     public boolean userRegistered(String username) {
         boolean contains = false;
-        for(User u : users) {
+        for(User u : productsBean.getUsers()) {
             if(username.equals(u.getUsername())){
                 contains = true;
+                System.out.println("user registered");
             }
         }
-        System.out.println("user registered");
         return contains;
     }
 
     public boolean userMatchPwd(String username, String password){
         boolean match = false;
 
-        for(User user : users) {
+        for(User user : productsBean.getUsers()) {
             if(user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 match = true;
+                System.out.println("Passwords match");
             }
         }
-
         return match;
     }
 
     public String loginUser(){
         System.out.println("users");
-        System.out.println(users);
+        System.out.println(productsBean.getUsers());
+
+        System.out.println("username");
+        System.out.println(username);
+
+        System.out.println("pwd");
+        System.out.println(password);
 
         if(userRegistered(username) && userMatchPwd(username, password) && username != "" && password != ""){
             return "productDetails";
@@ -113,9 +114,7 @@ public class UserManager implements Serializable {
 
     public double getTotalPrice() {
         int qnty = 0;
-        for(Products p : products){
-            System.out.println("Pridce");
-            System.out.println(p.getTotalPrice());
+        for(Products p : productsBean.getProductData()){
             qnty += p.getTotalPrice();
         }
         return qnty;
@@ -126,8 +125,8 @@ public class UserManager implements Serializable {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream("Products.csv");
 
-        System.out.println("Input Stream");
-        System.out.println(is);
+//        System.out.println("Input Stream");
+//        System.out.println(is);
 
         InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
         BufferedReader reader = new BufferedReader(streamReader);
@@ -135,15 +134,16 @@ public class UserManager implements Serializable {
 //            System.out.println("Line.....");
 //            System.out.println(line);
             String[] data = line.split(",");
-            products.add(new Products(data[0], data[1], Double.parseDouble(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4]), Double.parseDouble(data[5])));
+            productsBean.getProductData().add(new Products(data[0], data[1], Double.parseDouble(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4]), Double.parseDouble(data[5])));
             productDataModel = new ProductDataModel(productsBean.getProductData(), productsBean.getProductData().size());
 //            System.out.println("Product DAta");
 //            System.out.println(productData);
         }
+        setPurchasedProducts(productsBean.getProductData());
     }
 
     public void setProductUnits(Products p){
-        for(Products products : products){
+        for(Products products : productsBean.getProductData()){
             if(products.getSerialNum().equals(p.getSerialNum())){
                 p.setPurchaseNum(p.getPurchaseNum());
                 p.setTotalPrice();
@@ -151,10 +151,13 @@ public class UserManager implements Serializable {
         }
     }
 
-    public void saveProductData(){
-        for(Products p: products){
+    public void viewProductData(){
+        System.out.println("user");
+        System.out.println(username);
+
+        System.out.println("Products");
+        for(Products p: ProductsBean.getProductData()){
             System.out.println(getTotalPrice());
         }
     }
-
 }

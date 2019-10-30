@@ -13,15 +13,15 @@
     <h:form>
         <h:panelGrid columns="2">
             #{msgs.usernamePrompt}
-            <h:inputText value="#{userManager.username}"/>
+            <h:inputText value="#{user.username}"/>
 
         </h:panelGrid>
         <h:panelGrid columns="2">
             #{msgs.passwordPrompt}
-            <h:inputText value="#{userManager.password}"/>
+            <h:inputText value="#{user.password}"/>
         </h:panelGrid>
         <h:panelGrid rows="2">
-            <h:commandButton value="#{msgs.loginPrompt}" action="#{userManager.loginUser()}"/>
+            <h:commandButton value="#{msgs.loginPrompt}" action="#{user.loginUser()}"/>
         </h:panelGrid>
     </h:form>
     <h:messages/>
