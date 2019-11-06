@@ -3,42 +3,41 @@ package product.beans;
 import java.util.ArrayList;
 
 public class User {
-    String username = "";
-    String password = "";
+    String id = "";
     ArrayList<Products> purchasedProducts = new ArrayList<>();
 
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public User(String id, ArrayList<Products> purchasedProducts) {
+        this.id = id;
         this.purchasedProducts = purchasedProducts;
     }
 
-    public String getUsername() {
-        return username;
+
+    public String getId() {
+        return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public ArrayList<Products> getPurchasedProducts() {
         return purchasedProducts;
     }
+
 
     public void setPurchasedProducts(ArrayList<Products> purchasedProducts) {
         this.purchasedProducts = purchasedProducts;
     }
 
     @Override
+    public boolean equals(Object o){
+        User user = (User) o;
+        return this.id == user.getId();
+    }
+
+    @Override
     public String toString(){
-        return username;
+        return id;
     }
 }

@@ -12,10 +12,7 @@ public class ProductsBean implements Serializable {
     private static ArrayList<Products> productData = new ArrayList<>();
     private static ArrayList<User> users = new ArrayList<>();
 
-    public ProductsBean(){
-        users.add(new User("Pablo", "123"));
-        users.add(new User("Adrian", "123"));
-    }
+    public ProductsBean(){}
 
     public ArrayList<User> getUsers() {
         return users;
