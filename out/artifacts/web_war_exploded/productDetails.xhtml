@@ -28,7 +28,7 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">Amount to Purchase</f:facet>
-                    <h:inputText value="#{t.purchaseNum}" size="10" required="true">
+                    <h:inputText value="#{t.purchaseNum}" size="10" required="true" onchange="submit()" valueChangeListener="#{user.localeChanged}" >
                         <f:ajax event="blur" render="result" listener="#{user.setProductUnits(t)}"/>
                     </h:inputText>
 
