@@ -1,8 +1,13 @@
 package product.beans;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.validator.ValidatorException;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 import java.io.*;
@@ -124,6 +129,37 @@ public class UserManager implements Serializable {
             System.out.println(getTotalPrice());
         }
     }
+
+    public void validatePurchae(FacesContext arg0, UIComponent arg1, Object arg2)
+            throws ValidatorException
+
+    {
+        if ((int)arg2 > -1) {
+            //throw new ValidatorException(new FacesMessage("Al menos 5 caracteres "));
+        }else {
+            //FacesMessage error = new FacesMessage("Solo valores positivos");
+            //FacesContext.getCurrentInstance().addMessage(null, error);
+            throw new ValidatorException(new FacesMessage("Solo Valores Positivos "));
+        }
+    }
+
+    public void localeChanged(ValueChangeEvent e) {
+
+        System.out.println("HOLA "+e.getNewValue().toString());
+        int temp= Integer.parseInt(e.getNewValue().toString());
+
+        if (temp>-1) {
+            //throw new ValidatorException(new FacesMessage("Al menos 5 caracteres "));
+        }else {
+
+            FacesMessage error = new FacesMessage("Error: '"+e.getNewValue().toString()+"' Solo valores positivos");
+            error.setSeverity(FacesMessage.SEVERITY_ERROR);
+            FacesContext.getCurrentInstance().addMessage(null, error);
+
+        }
+
+    }
+
 
     public String getPriceCriteria() {
         return priceCriteria;

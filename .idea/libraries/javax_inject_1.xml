@@ -1,10 +1,13 @@
 <component name="libraryTable">
   <library name="javax.inject-1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../servers/wildfly-16.0.0.Final/modules/system/layers/base/javax/inject/api/main/javax.inject-1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../servers/wildfly-16.0.0.Final/modules/system/layers/base/javax/enterprise/api/main/cdi-api-2.0.SP1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../wildfly-17.0.1.Final/modules/system/layers/base/javax/enterprise/api/main/cdi-api-2.0.SP1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../wildfly-17.0.1.Final/modules/system/layers/base/javax/inject/api/main/javax.inject-1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../wildfly-17.0.1.Final/modules/system/layers/base/javax/servlet/api/main/jboss-servlet-api_4.0_spec-1.0.0.Final.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../wildfly-17.0.1.Final/modules/system/layers/base/javax/servlet/api/main/jboss-servlet-api_4.0_spec-1.0.0.Final.jar!/" />
+    </SOURCES>
   </library>
 </component>
