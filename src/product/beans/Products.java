@@ -66,6 +66,12 @@ public class Products {
     }
 
     @Override
+    public boolean equals(Object o){
+        Products p = (Products) o;
+        return this.getSerialNum().equals(p.getSerialNum());
+    }
+
+    @Override
     public String toString(){
         return productName;
     }

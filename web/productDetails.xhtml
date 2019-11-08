@@ -8,18 +8,32 @@
 </h:head>
 <h:body>
     <h:form>
-        <div style="overflow:auto; width:100%; height:160px;">
-            <h:dataTable value="#{user.purchasedProducts}" var="t" border="1">
+        <div style="overflow:auto; width:100%">
+            <h:dataTable value="#{user.purchasedProducts}" binding="#{user.table}" rows="#{user.rowsOnPage}" var="t" border="1">
                 <h:column>
-                    <f:facet name="header">Serial Number</f:facet>
+                    <f:facet name="header">
+                        Serial Number
+                    </f:facet>
                     #{t.serialNum}
                 </h:column>
                 <h:column>
-                    <f:facet name="header">Product Name</f:facet>
+                    <f:facet name="header">
+                        Product Name
+                        <h:inputText value="#{user.nameCriteria}"></h:inputText>
+                        <h:commandButton value="Filter" action="#{user.addTableFilter()}"/>
+                    </f:facet>
                     #{t.productName}
                 </h:column>
                 <h:column>
-                    <f:facet name="header">Price per Unit</f:facet>
+                    <f:facet name="header">
+                        Price per Unit
+                        <br/>
+                        <h:selectOneMenu value="#{user.priceCriteria}">
+                            <f:selectItem itemValue="all" itemLabel="all" />
+                            <f:selectItem itemValue="&lt;10" itemLabel="&lt;10" />
+                            <f:selectItem itemValue="&gt;=10" itemLabel="&gt;=10" />
+                            <h:commandButton value="Filter" action="#{user.addTableFilter()}"/>
+                        </h:selectOneMenu></f:facet>
                     #{t.pricePerUnit}
                 </h:column>
                 <h:column>
@@ -37,6 +51,22 @@
                     <f:facet name="header">Total Price</f:facet>
                     <h:outputText id="result" value="#{t.getTotalPrice()}"/>
                 </h:column>
+                <f:facet name="footer">
+                    <h:outputText value="#{(user.table.first div user.table.rows) + 1}">
+                        <f:converter converterId="javax.faces.Integer"/>
+                    </h:outputText>
+                    of
+                    <h:outputText value="#{user.table.rowCount mod user.table.rows eq 0 ? (user.table.rowCount div  user.table.rows) : ((user.table.rowCount div  user.table.rows) + 1)-(((user.table.rowCount div  user.table.rows) + 1) mod 1)}">
+                        <f:converter converterId="javax.faces.Integer"/>
+                    </h:outputText>
+                    <h:commandButton value="First Page" action="#{user.goToFirstPage()}" disabled="#{user.table.first eq 0}" />
+                    <h:commandButton value="Previous Page" action="#{user.goToPreviousPage()}" disabled="#{user.table.first eq 0}" />
+                    <h:commandButton value="Next Page" action="#{user.goToNextPage()}" disabled="#{user.table.first + user.table.rows ge user.table.rowCount}" />
+                    <h:commandButton value="Last Page" action="#{user.goToLastPage()}" disabled="#{user.table.first + user.table.rows ge user.table.rowCount}" />
+                    <b>FIRST:</b> #{user.table.first}
+                    <b>ROWS:</b> #{user.table.rows}
+                    <b>ROW COUNT:</b> #{user.table.rowCount}
+                </f:facet>
             </h:dataTable>
         </div>
         <h:commandButton value="Calculate Total">
