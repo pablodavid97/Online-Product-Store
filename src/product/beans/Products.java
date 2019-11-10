@@ -7,6 +7,63 @@ public class Products {
     private int stockNum;
     private int purchaseNum;
     private double totalPrice;
+    private String amountStr;
+
+
+    private String errorStr;
+
+
+    public String getErrorStr() {
+        String errorCopy = errorStr;
+        errorStr = "";
+        return errorCopy;
+    }
+
+    public void setErrorStr(String errorStr) {
+        this.errorStr = errorStr;
+    }
+
+    public boolean isInteger( String input ) {
+        try {
+            Integer.parseInt( input );
+            return true;
+        }
+        catch( NumberFormatException e ) {
+            return false;
+        }
+    }
+
+    public String getAmountStr(){
+        return amountStr;
+    }
+
+    public void setAmountStr(String newAmt){
+        int purchaseNum = 0;
+        if(isInteger(newAmt)){
+            purchaseNum = Integer.parseInt(newAmt);
+            if (purchaseNum >= 0) {
+                if (purchaseNum <= getStockNum()) {
+                    setPurchaseNum(purchaseNum);
+                    amountStr = newAmt;
+                }
+                else {
+                    setErrorStr(String.format("The amount of '%s' items cannot be greater than the available stock. Amount set to 0.", getProductName()));
+                    setPurchaseNum(0);
+                    amountStr = "0";
+                }
+            }
+            else {
+                setErrorStr(String.format("The amount of '%s' items cannot be less than 0. Amount set to 0.", getProductName()));
+                setPurchaseNum(0);
+                amountStr = "0";
+            }
+        }
+        else {
+            setErrorStr(String.format("The amount of '%s' items cannot be a String, it needs to be a positive integer. Amount set to 0.", getProductName()));
+            setPurchaseNum(0);
+            amountStr = "0";
+        }
+    }
 
     public Products(Products p){
         this.serialNum = p.serialNum;
@@ -15,6 +72,8 @@ public class Products {
         this.stockNum = p.stockNum;
         this.purchaseNum = p.purchaseNum;
         this.totalPrice = p.totalPrice;
+        this.amountStr = "0";
+        this.errorStr = "";
     }
 
     public Products(String serialNum, String productName, double pricePerUnit, int stockNum, int purchaseNum, double totalPrice) {
@@ -24,6 +83,8 @@ public class Products {
         this.stockNum = stockNum;
         this.purchaseNum = purchaseNum;
         this.totalPrice = totalPrice;
+        this.amountStr = "0";
+        this.errorStr = "";
     }
 
     public String getSerialNum() {
@@ -63,7 +124,10 @@ public class Products {
     }
 
     public void setPurchaseNum(int purchaseNum) {
-        if (purchaseNum >= 0) this.purchaseNum = purchaseNum;
+        if (purchaseNum >= 0) {
+            this.purchaseNum = purchaseNum;
+            this.amountStr = "" + purchaseNum;
+        }
     }
 
     public double getTotalPrice() {

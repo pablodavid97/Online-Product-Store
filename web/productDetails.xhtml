@@ -7,7 +7,7 @@
     <title></title>
 </h:head>
 <h:body>
-    <h:form>
+    <h:form id="theform">
         <div style="overflow:auto; width:100%">
             <h:dataTable id="tableau" value="#{user.filteredProducts}" binding="#{user.table}" rows="#{user.rowsOnPage}" var="t" border="1">
                 <h:column>
@@ -23,8 +23,10 @@
                         <h:commandLink action="#{user.sortProductsByName()}">
                             Product Name
                         </h:commandLink>
-                        <h:inputText value="#{user.nameCriteria}"></h:inputText>
-                        <h:commandButton value="Filter" action="#{user.addTableFilter()}"/>
+                        <h:inputText id="namecrit" value="#{user.nameCriteria}"></h:inputText>
+                        <h:commandButton value="Filter" action="#{user.addNameFilter()}"/>
+                        <br/>
+                        <h:commandButton value="Clear Filter" action="#{user.refreshTable()}"/>
                     </f:facet>
                     #{t.productName}
                 </h:column>
@@ -38,7 +40,7 @@
                             <f:selectItem itemValue="all" itemLabel="all" />
                             <f:selectItem itemValue="&lt;10" itemLabel="&lt;10" />
                             <f:selectItem itemValue="&gt;=10" itemLabel="&gt;=10" />
-                            <h:commandButton value="Filter" action="#{user.addTableFilter()}"/>
+                            <h:commandButton value="Filter" action="#{user.addPriceFilter()}"/>
                         </h:selectOneMenu></f:facet>
                     #{t.pricePerUnit}
                 </h:column>
@@ -56,8 +58,8 @@
                             Amount to Purchase
                         </h:commandLink>
                     </f:facet>
-                    <h:inputText id="amountinput" value="#{t.purchaseNum}" size="10" required="true"><!--onchange="submit()" valueChangeListener="#{user.localeChanged}"-->
-                        <f:ajax event="blur" render="result amountinput" listener="#{user.setProductUnits(t)}"/>
+                    <h:inputText id="amountinput" value="#{t.amountStr}" size="10" required="true"><!--onchange="submit()" valueChangeListener="#{user.localeChanged}"-->
+                        <f:ajax event="blur" render="result amountinput :theform:errortext :theform:totalPrice" update="" listener="#{user.setProductUnits(t)}"/>
                     </h:inputText>
                 </h:column>
                 <h:column>
@@ -86,11 +88,13 @@
                 </f:facet>
             </h:dataTable>
         </div>
+        <h:outputText id="errortext" style="color: red" value="#{user.errorString}" />
+        <br/>
         <h:commandButton value="Calculate Total">
             <f:ajax event="click" render="totalPrice"/>
         </h:commandButton>
         <br/>
-        <h:commandButton value="Purchase Items" action="purchasedItems" actionListener="#{user.viewProductData()}"/>
+        <h:commandButton value="Purchase Items" action="#{user.doPurchase()}" actionListener="#{user.viewProductData()}"/>
         <br/>
         <h:outputText value="Total: " /><h:outputText id="totalPrice" value="#{user.getTotalPrice()}" />
     </h:form>

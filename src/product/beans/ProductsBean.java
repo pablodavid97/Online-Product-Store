@@ -3,6 +3,8 @@ package product.beans;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
@@ -14,6 +16,7 @@ public class ProductsBean implements Serializable {
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Products> filteredProducts = new ArrayList<>();
     private static ProductsBean singleton = new ProductsBean();
+    private Lock lock = new ReentrantLock();
 
     public ProductsBean(){
         try {
@@ -35,17 +38,19 @@ public class ProductsBean implements Serializable {
         this.users = users;
     }
 
-    public ArrayList<Products> getProductData() {
+    private ArrayList<Products> getProductData() {
         return productData;
     }
 
     //TRYING
     public ArrayList<Products> getProductCopy() {
         ArrayList<Products> productsCopy = new ArrayList<>();
-
+        lock.lock();
         for (Products p: productData)
-            productsCopy.add(new Products(p));
+            if(p.getStockNum() > 0)
+                productsCopy.add(new Products(p));
 
+        lock.unlock();
         return productsCopy;
     }
 
@@ -84,5 +89,41 @@ public class ProductsBean implements Serializable {
 
     public void clearAll() {
         filteredProducts.clear();
+    }
+
+    public ArrayList<Products> validatePurchase(ArrayList<Products> purchased){
+        ArrayList<Products> invalidProds = new ArrayList<>();
+        boolean validPurchase = true;
+        lock.lock();
+        for(Products p: purchased){
+            for(Products prod_real: productData){
+                if (p.getSerialNum().equals(prod_real.getSerialNum())){
+                    p.setStockNum(prod_real.getStockNum());
+                    if(p.getPurchaseNum() > p.getStockNum()){
+                        validPurchase = false;
+                        p.setPurchaseNum(0);
+                        invalidProds.add(p);
+                    }
+                }
+            }
+        }
+
+        if (validPurchase){
+            for(Products p: purchased){
+                if (p.getPurchaseNum() == 0)
+                    continue;
+
+                for(Products prod_real: productData){
+                    if (p.getSerialNum().equals(prod_real.getSerialNum())){
+                        p.setStockNum(prod_real.getStockNum());
+                        if(p.getPurchaseNum() <= p.getStockNum()){
+                            prod_real.setStockNum(prod_real.getStockNum()-p.getPurchaseNum());
+                        }
+                    }
+                }
+            }
+        }
+        lock.unlock();
+        return invalidProds;
     }
 }

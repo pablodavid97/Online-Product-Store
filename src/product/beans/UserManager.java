@@ -1,5 +1,6 @@
 package product.beans;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -7,6 +8,7 @@ import javax.faces.component.html.HtmlDataTable;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
@@ -22,23 +24,41 @@ import java.util.Iterator;
 public class UserManager implements Serializable {
     private ProductsBean productsBean;
     FacesContext fCtx = FacesContext.getCurrentInstance();
-    HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-    String sessionId = session.getId();
+    //HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+    //String sessionId = session.getId();
     private HtmlDataTable table;
     private int rowsOnPage;
     private String nameCriteria = "";
     private String priceCriteria = "all";
     private ArrayList<Products> purchasedProducts = new ArrayList<>();
     private ArrayList<Products> filteredProducts = new ArrayList<>();
-
     public ArrayList<Products> getFilteredProducts() {
         return filteredProducts;
     }
+    private String errorString = "";
+
+    public ArrayList<Products> getLastPurchase() {
+        return lastPurchase;
+    }
+
+    public void setLastPurchase(ArrayList<Products> lastPurchase) {
+        this.lastPurchase = lastPurchase;
+    }
+
+    private ArrayList<Products> lastPurchase = new ArrayList<>();
+    public String getErrorString() {
+        return errorString;
+    }
+
+    public void setErrorString(String errorString) {
+        this.errorString = errorString;
+    }
+
 
     public UserManager(){
         productsBean = ProductsBean.getSingleton();
-        System.out.println("Id usuario");
-        System.out.println(sessionId);
+        //System.out.println("Id usuario");
+        //System.out.println(sessionId);
         rowsOnPage = 5;
 
         setPurchasedProducts(productsBean.getProductCopy());
@@ -143,6 +163,8 @@ public class UserManager implements Serializable {
             }
         }
 
+        setErrorString(getAllErrors());
+
 //        User user = new User(sessionId, purchasedProducts);
 //        if(!productsBean.getUsers().contains(user)){
 //            productsBean.getUsers().add(user);
@@ -172,6 +194,48 @@ public class UserManager implements Serializable {
         }
     }
     */
+
+    public String doPurchase(){
+        ArrayList<Products> invalidProducts = productsBean.validatePurchase(getPurchasedProducts());
+        String action;
+        lastPurchase.clear();
+        if (invalidProducts.size() == 0) {
+            for(Products p: purchasedProducts){
+                if(p.getPurchaseNum() > 0)
+                    lastPurchase.add(p);
+            }
+            action = "purchasedItems";
+        }
+
+        else {
+            action = null;
+            StringBuilder err_sb = new StringBuilder();
+            err_sb.append("Unable to purchase - not enough stock to fulfill your request for the following: ");
+            for(Products p: invalidProducts) {
+                if (p.getStockNum() == 0) {
+                    for (int i = 0; i < purchasedProducts.size(); i++) {
+                        Products cur = purchasedProducts.get(i);
+                        if (p.getSerialNum().equals(cur.getSerialNum())) {
+                            purchasedProducts.remove(i);
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < filteredProducts.size(); i++) {
+                        Products cur = filteredProducts.get(i);
+                        if (p.getSerialNum().equals(cur.getSerialNum())) {
+                            filteredProducts.remove(i);
+                            break;
+                        }
+                    }
+                }
+                err_sb.append(p.getProductName()).append(", ");
+            }
+            err_sb.append(". All of those amounts set to 0.");
+            setErrorString(err_sb.toString());
+        }
+
+        return action;
+    }
 
     public void validatePurchae(FacesContext arg0, UIComponent arg1, Object arg2)
             throws ValidatorException
@@ -267,6 +331,51 @@ public class UserManager implements Serializable {
         this.rowsOnPage = rowsOnPage;
     }
 
+    public void refreshTable() {
+        priceCriteria = "all";
+        nameCriteria = "";
+        addTableFilter();
+    }
+
+    public void addPriceFilter(){
+        filteredProducts.clear();
+        nameCriteria = "";
+        if (priceCriteria.equals(">=10")) {
+            for (int i = 0; i < purchasedProducts.size(); i++) {
+                Products products = purchasedProducts.get(i);
+                if (products.getPricePerUnit() >= 10.0) {
+                    filteredProducts.add(purchasedProducts.get(i));
+                }
+            }
+        }
+
+        if (priceCriteria.equals("<10")) {
+            for (int i = 0; i < purchasedProducts.size(); i++) {
+                Products products = purchasedProducts.get(i);
+                if (products.getPricePerUnit() < 10.0) {
+                    filteredProducts.add(purchasedProducts.get(i));
+                }
+            }
+        }
+
+        else
+            filteredProducts.addAll(getPurchasedProducts());
+    }
+
+    public void addNameFilter(){
+        filteredProducts.clear();
+        priceCriteria = "all";
+        if(!nameCriteria.equals("")){
+            String regex = nameCriteria.replace("*", ".*");
+            for (int i = 0; i < purchasedProducts.size(); i++) {
+                Products products = purchasedProducts.get(i);
+                if (products.getProductName().matches(regex)) {
+                    filteredProducts.add(purchasedProducts.get(i));
+                }
+            }
+        }
+    }
+
     public void addTableFilter(){
         filteredProducts.clear();
 
@@ -291,16 +400,18 @@ public class UserManager implements Serializable {
         if (priceCriteria.equals(">=10")) {
             for (int i = 0; i < purchasedProducts.size(); i++) {
                 Products products = purchasedProducts.get(i);
-                if (products.getPricePerUnit() < 10) {
+                if (products.getPricePerUnit() >= 10.0) {
+                    System.out.println("PROD" + products.getProductName() +"FITS");
                     filteredProducts.add(purchasedProducts.get(i));
                 }
             }
         }
 
         if (priceCriteria.equals("<10")) {
+            System.out.println("ENTERED <10 SECTION");
             for (int i = 0; i < purchasedProducts.size(); i++) {
                 Products products = purchasedProducts.get(i);
-                if (products.getPricePerUnit() >= 10) {
+                if (products.getPricePerUnit() < 10) {
                     filteredProducts.add(purchasedProducts.get(i));
                 }
             }
@@ -468,7 +579,7 @@ public class UserManager implements Serializable {
                 if(stockSortType.equals("asc")){
                     return key_1.getStockNum() - key_2.getStockNum();
                 } else {
-                    return (-1) * key_1.getStockNum() - key_2.getStockNum();
+                    return (-1) * (key_1.getStockNum() - key_2.getStockNum());
                 }
             }
         });
@@ -481,10 +592,10 @@ public class UserManager implements Serializable {
         Collections.sort(filteredProducts, new Comparator<Products>() {
             @Override
             public int compare(Products key_1, Products key_2) {
-                if(stockSortType.equals("asc")){
+                if(amountSortType.equals("asc")){
                     return key_1.getPurchaseNum() - key_2.getPurchaseNum();
                 } else {
-                    return (-1) * key_1.getPurchaseNum() - key_2.getPurchaseNum();
+                    return (-1) * (key_1.getPurchaseNum() - key_2.getPurchaseNum());
                 }
             }
         });
@@ -497,7 +608,7 @@ public class UserManager implements Serializable {
         Collections.sort(filteredProducts, new Comparator<Products>() {
             @Override
             public int compare(Products key_1, Products key_2) {
-                if(unitPriceSortType.equals("asc")){
+                if(totalPriceSortType.equals("asc")){
                     return key_1.getTotalPrice() > key_2.getTotalPrice() ? 1 : -1; //"==" es irrelevante porque es sorting
                 } else {
                     return (-1) * (key_1.getTotalPrice() > key_2.getTotalPrice() ? 1 : -1);
@@ -508,5 +619,15 @@ public class UserManager implements Serializable {
         return null;
     }
 
-
+    public String getAllErrors(){
+        StringBuilder errStrBuilder = new StringBuilder();
+        System.out.println("ENTERING THE ERROR BUILDER");
+        for(Products p: purchasedProducts){
+            errStrBuilder.append(p.getErrorStr());
+            if(!p.getErrorStr().equals(""))
+                errStrBuilder.append("\n");
+        }
+        System.out.println("ERRORS ARE: " + errStrBuilder.toString());
+        return errStrBuilder.toString();
+    }
 }
