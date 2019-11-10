@@ -157,7 +157,6 @@ public class UserManager implements Serializable {
             Products products = iter.next();
 
             if(products.getSerialNum().equals(p.getSerialNum()) && p.getPurchaseNum() >= 0){
-                System.out.println("PURCHASE VALID, NUM IS: " + p.getPurchaseNum());
                 products.setPurchaseNum(p.getPurchaseNum());
                 products.setTotalPrice();
             }
@@ -621,13 +620,11 @@ public class UserManager implements Serializable {
 
     public String getAllErrors(){
         StringBuilder errStrBuilder = new StringBuilder();
-        System.out.println("ENTERING THE ERROR BUILDER");
         for(Products p: purchasedProducts){
             errStrBuilder.append(p.getErrorStr());
             if(!p.getErrorStr().equals(""))
                 errStrBuilder.append("\n");
         }
-        System.out.println("ERRORS ARE: " + errStrBuilder.toString());
         return errStrBuilder.toString();
     }
 }
