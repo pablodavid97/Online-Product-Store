@@ -105,7 +105,7 @@ public class UserManager implements Serializable {
     }
 
     public double getTotalPrice() {
-        int qnty = 0;
+        double qnty = 0;
         for(Products p : purchasedProducts){
             qnty += p.getTotalPrice();
         }
@@ -404,4 +404,109 @@ public class UserManager implements Serializable {
 
     }
     */
+
+    private String serialSortType = "asc";
+    private String nameSortType = "asc";
+    private String unitPriceSortType = "asc";
+    private String stockSortType = "asc";
+    private String amountSortType = "asc";
+    private String totalPriceSortType = "asc";
+
+    public String sortProductsBySerialNum() {
+
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                if(serialSortType.equals("asc")){
+                    return key_1.getSerialNum().compareTo(key_2.getSerialNum());
+                } else {
+                    return (-1) * key_1.getSerialNum().compareTo(key_2.getSerialNum());
+                }
+            }
+        });
+        serialSortType=(serialSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortProductsByName() {
+
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                if(nameSortType.equals("asc")){
+                    return key_1.getProductName().compareTo(key_2.getProductName());
+                } else {
+                    return (-1) * key_1.getProductName().compareTo(key_2.getProductName());
+                }
+            }
+        });
+        nameSortType=(nameSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortProductsByUnitPrice() {
+
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                if(unitPriceSortType.equals("asc")){
+                    return key_1.getPricePerUnit() > key_2.getPricePerUnit() ? 1 : -1; //"==" es irrelevante porque es sorting
+                } else {
+                    return (-1) * (key_1.getPricePerUnit() > key_2.getPricePerUnit() ? 1 : -1);
+                }
+            }
+        });
+        unitPriceSortType=(unitPriceSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortProductsByStockNum() {
+
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                if(stockSortType.equals("asc")){
+                    return key_1.getStockNum() - key_2.getStockNum();
+                } else {
+                    return (-1) * key_1.getStockNum() - key_2.getStockNum();
+                }
+            }
+        });
+        stockSortType=(stockSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortProductsByAmountToPurchase() {
+
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                if(stockSortType.equals("asc")){
+                    return key_1.getPurchaseNum() - key_2.getPurchaseNum();
+                } else {
+                    return (-1) * key_1.getPurchaseNum() - key_2.getPurchaseNum();
+                }
+            }
+        });
+        amountSortType=(amountSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortProductsByTotalPrice() {
+
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                if(unitPriceSortType.equals("asc")){
+                    return key_1.getTotalPrice() > key_2.getTotalPrice() ? 1 : -1; //"==" es irrelevante porque es sorting
+                } else {
+                    return (-1) * (key_1.getTotalPrice() > key_2.getTotalPrice() ? 1 : -1);
+                }
+            }
+        });
+        totalPriceSortType=(totalPriceSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+
 }
