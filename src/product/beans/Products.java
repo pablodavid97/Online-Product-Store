@@ -38,8 +38,9 @@ public class Products {
     }
 
     public void setAmountStr(String newAmt){
+        System.out.println("ENTERED AMTSTR VALIDATION!");
         int purchaseNum = 0;
-        if(isInteger(newAmt)){
+        if(isInteger(newAmt) && !newAmt.equals("")){
             purchaseNum = Integer.parseInt(newAmt);
             if (purchaseNum >= 0) {
                 if (purchaseNum <= getStockNum()) {
@@ -127,6 +128,7 @@ public class Products {
         if (purchaseNum >= 0) {
             this.purchaseNum = purchaseNum;
             this.amountStr = "" + purchaseNum;
+            setTotalPrice();
         }
     }
 
@@ -135,7 +137,7 @@ public class Products {
     }
 
     public void setTotalPrice() {
-        this.totalPrice = purchaseNum * pricePerUnit;
+        this.totalPrice = (double) Math.round(purchaseNum * pricePerUnit * 100.0) / 100.0;
     }
 
     @Override

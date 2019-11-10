@@ -24,9 +24,9 @@
                             Product Name
                         </h:commandLink>
                         <h:inputText id="namecrit" value="#{user.nameCriteria}"></h:inputText>
-                        <h:commandButton value="Filter" action="#{user.addNameFilter()}"/>
+                        <h:commandButton value="Find" action="#{user.addNameFilter()}"/>
                         <br/>
-                        <h:commandButton value="Clear Filter" action="#{user.refreshTable()}"/>
+                        <h:commandButton value="Clear Filters" action="#{user.refreshTable()}"/>
                     </f:facet>
                     #{t.productName}
                 </h:column>
@@ -40,7 +40,7 @@
                             <f:selectItem itemValue="all" itemLabel="all" />
                             <f:selectItem itemValue="&lt;10" itemLabel="&lt;10" />
                             <f:selectItem itemValue="&gt;=10" itemLabel="&gt;=10" />
-                            <h:commandButton value="Filter" action="#{user.addPriceFilter()}"/>
+                            <h:commandButton value="Find" action="#{user.addPriceFilter()}"/>
                         </h:selectOneMenu></f:facet>
                     #{t.pricePerUnit}
                 </h:column>
@@ -90,10 +90,12 @@
         </div>
         <h:outputText id="errortext" style="color: red" value="#{user.errorString}" />
         <br/>
+        <!--
         <h:commandButton value="Calculate Total">
             <f:ajax event="click" render="totalPrice"/>
         </h:commandButton>
         <br/>
+        -->
         <h:commandButton value="Purchase Items" action="#{user.doPurchase()}" actionListener="#{user.viewProductData()}"/>
         <br/>
         <h:outputText value="Total: " /><h:outputText id="totalPrice" value="#{user.getTotalPrice()}" />

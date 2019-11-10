@@ -19,13 +19,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-@Named("user_session")
-@SessionScoped
-public class UserManager implements Serializable {
+@Named("user")
+@ViewScoped
+public class ProductsViewBean implements Serializable {
     private ProductsBean productsBean;
-    FacesContext fCtx = FacesContext.getCurrentInstance();
-    //HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-    //String sessionId = session.getId();
+    @Inject
+    private UserManager userManager;
     private HtmlDataTable table;
     private int rowsOnPage;
     private String nameCriteria = "";
@@ -37,15 +36,6 @@ public class UserManager implements Serializable {
     }
     private String errorString = "";
 
-    public ArrayList<Products> getLastPurchase() {
-        return lastPurchase;
-    }
-
-    public void setLastPurchase(ArrayList<Products> lastPurchase) {
-        this.lastPurchase = lastPurchase;
-    }
-
-    private ArrayList<Products> lastPurchase = new ArrayList<>();
     public String getErrorString() {
         return errorString;
     }
@@ -54,11 +44,8 @@ public class UserManager implements Serializable {
         this.errorString = errorString;
     }
 
-
-    public UserManager(){
+    public ProductsViewBean(){
         productsBean = ProductsBean.getSingleton();
-        //System.out.println("Id usuario");
-        //System.out.println(sessionId);
         rowsOnPage = 5;
 
         setPurchasedProducts(productsBean.getProductCopy());
@@ -73,24 +60,6 @@ public class UserManager implements Serializable {
         */
     }
 
-    private void getDataBetweenReq() {
-    }
-    /*
-    private void getDataBetweenReq() {
-        if (getFilteredProducts().size() > 0 && !(priceCriteria.equals("all") || nameCriteria.equals(""))) {
-            purchasedProducts.clear();
-            purchasedProducts.addAll(getFilteredProducts());
-        }
-    }
-    */
-
-    /*
-    private void getDataBetweenReq() {
-        if (productsBean.getFilteredProducts().size() > 0 && !(priceCriteria.equals("all") || nameCriteria.equals(""))) {
-            purchasedProducts.clear();
-            purchasedProducts.addAll(productsBean.getFilteredProducts());
-        }
-    }*/
 
     public ProductsBean getProductsBean() {
         return productsBean;
@@ -103,11 +72,6 @@ public class UserManager implements Serializable {
     public ArrayList<Products> getProducts() {
         return purchasedProducts;
     }
-    /*
-    public ArrayList<Products> getProducts() {
-        return productsBean.getProductData();
-    }
-    */
 
     public void setProducts(ArrayList<Products> products) {
         this.productsBean.setProductData(products);
@@ -127,30 +91,11 @@ public class UserManager implements Serializable {
         for(Products p : purchasedProducts){
             qnty += p.getTotalPrice();
         }
-        return (double) Math.round(qnty * 100.0) / 100.0;
+        return (double) Math.round(qnty*100.0) / 100.0;
     }
-
-    /*
-    public void readProductData() throws IOException {
-        if (productsBean.getProductData().isEmpty()) {
-            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            InputStream is = classloader.getResourceAsStream("Products.csv");
-
-            InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(streamReader);
-            for (String line; (line = reader.readLine()) != null; ) {
-                String[] data = line.split(",");
-                productsBean.getProductData().add(new Products(data[0], data[1], Double.parseDouble(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4]), Double.parseDouble(data[5])));
-            }
-        }
-        setPurchasedProducts(productsBean.getProductData());
-    }
-    */
 
     public void setProductUnits(Products p){
         Iterator<Products> iter = purchasedProducts.iterator();
-
-
         while (iter.hasNext()){
             Products products = iter.next();
 
@@ -195,11 +140,11 @@ public class UserManager implements Serializable {
     public String doPurchase(){
         ArrayList<Products> invalidProducts = productsBean.validatePurchase(getPurchasedProducts());
         String action;
-        lastPurchase.clear();
+        userManager.getLastPurchase().clear();
         if (invalidProducts.size() == 0) {
             for(Products p: purchasedProducts){
                 if(p.getPurchaseNum() > 0)
-                    lastPurchase.add(p);
+                    userManager.getLastPurchase().add(p);
             }
             action = "purchasedItems";
         }
@@ -234,36 +179,6 @@ public class UserManager implements Serializable {
         return action;
     }
 
-    public void validatePurchae(FacesContext arg0, UIComponent arg1, Object arg2)
-            throws ValidatorException
-
-    {
-        if ((int)arg2 > -1) {
-            //throw new ValidatorException(new FacesMessage("Al menos 5 caracteres "));
-        }else {
-            //FacesMessage error = new FacesMessage("Solo valores positivos");
-            //FacesContext.getCurrentInstance().addMessage(null, error);
-            throw new ValidatorException(new FacesMessage("Solo Valores Positivos "));
-        }
-    }
-
-    public void localeChanged(ValueChangeEvent e) {
-
-        System.out.println("HOLA "+e.getNewValue().toString());
-        int temp= Integer.parseInt(e.getNewValue().toString());
-
-        if (temp>-1) {
-            //throw new ValidatorException(new FacesMessage("Al menos 5 caracteres "));
-        }else {
-
-            FacesMessage error = new FacesMessage("Error: '"+e.getNewValue().toString()+"' Solo valores positivos");
-            error.setSeverity(FacesMessage.SEVERITY_ERROR);
-            FacesContext.getCurrentInstance().addMessage(null, error);
-
-        }
-
-    }
-
 
     public String getPriceCriteria() {
         return priceCriteria;
@@ -291,23 +206,19 @@ public class UserManager implements Serializable {
     }
 
     public void goToFirstPage() {
-        getDataBetweenReq();
         table.setFirst(0);
     }
 
     public void goToPreviousPage() {
-        getDataBetweenReq();
         table.setFirst(table.getFirst() - table.getRows());
     }
 
     public void goToNextPage() {
-        getDataBetweenReq();
         table.setFirst(table.getFirst() + table.getRows());
 
     }
 
     public void goToLastPage() {
-        getDataBetweenReq();
         int totalRows = table.getRowCount();
         int displayRows = table.getRows();
         int full = totalRows / displayRows;
@@ -598,13 +509,6 @@ public class UserManager implements Serializable {
         });
         amountSortType=(amountSortType.equals("asc")) ? "dsc" : "asc";
         return null;
-    }
-    public double getLastPurchaseTotalPrice(){
-        double total = 0;
-        for(Products p: lastPurchase){
-            total += p.getTotalPrice();
-        }
-        return (double) Math.round(total * 100d) / 100d;
     }
 
     public String sortProductsByTotalPrice() {
