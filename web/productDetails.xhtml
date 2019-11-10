@@ -9,7 +9,7 @@
 <h:body>
     <h:form>
         <div style="overflow:auto; width:100%">
-            <h:dataTable value="#{user.purchasedProducts}" binding="#{user.table}" rows="#{user.rowsOnPage}" var="t" border="1">
+            <h:dataTable id="tableau" value="#{user.filteredProducts}" binding="#{user.table}" rows="#{user.rowsOnPage}" var="t" border="1">
                 <h:column>
                     <f:facet name="header">
                         Serial Number
@@ -42,8 +42,8 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">Amount to Purchase</f:facet>
-                    <h:inputText value="#{t.purchaseNum}" size="10" required="true" onchange="submit()" valueChangeListener="#{user.localeChanged}" >
-                        <f:ajax event="blur" render="result" listener="#{user.setProductUnits(t)}"/>
+                    <h:inputText id="amountinput" value="#{t.purchaseNum}" size="10" required="true"><!--onchange="submit()" valueChangeListener="#{user.localeChanged}"-->
+                        <f:ajax event="blur" render="result amountinput" listener="#{user.setProductUnits(t)}"/>
                     </h:inputText>
 
                 </h:column>

@@ -8,6 +8,15 @@ public class Products {
     private int purchaseNum;
     private double totalPrice;
 
+    public Products(Products p){
+        this.serialNum = p.serialNum;
+        this.productName = p.productName;
+        this.pricePerUnit = p.pricePerUnit;
+        this.stockNum = p.stockNum;
+        this.purchaseNum = p.purchaseNum;
+        this.totalPrice = p.totalPrice;
+    }
+
     public Products(String serialNum, String productName, double pricePerUnit, int stockNum, int purchaseNum, double totalPrice) {
         this.serialNum = serialNum;
         this.productName = productName;
@@ -54,7 +63,7 @@ public class Products {
     }
 
     public void setPurchaseNum(int purchaseNum) {
-        this.purchaseNum = purchaseNum;
+        if (purchaseNum >= 0) this.purchaseNum = purchaseNum;
     }
 
     public double getTotalPrice() {
