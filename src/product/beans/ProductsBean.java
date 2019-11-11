@@ -13,7 +13,6 @@ import javax.inject.Named;
 public class ProductsBean implements Serializable {
 
     private ArrayList<Products> productData = new ArrayList<>();
-    private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Products> filteredProducts = new ArrayList<>();
     private static ProductsBean singleton = new ProductsBean();
     private Lock lock = new ReentrantLock();
@@ -28,14 +27,6 @@ public class ProductsBean implements Serializable {
 
     public static ProductsBean getSingleton(){
         return singleton;
-    }
-
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(ArrayList<User> users) {
-        this.users = users;
     }
 
     private ArrayList<Products> getProductData() {
@@ -58,9 +49,6 @@ public class ProductsBean implements Serializable {
         this.productData = productData;
     }
 
-    public void addUser(User user) {
-        users.add(user);
-    }
     public ArrayList<Products> getFilteredProducts() {
         return filteredProducts;
     }
