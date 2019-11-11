@@ -230,7 +230,13 @@ public class ProductsViewBean implements Serializable {
     public void refreshTable() {
         priceCriteria = "all";
         nameCriteria = "";
-        addTableFilter();
+        setFilteredProducts(getPurchasedProducts());
+        Collections.sort(filteredProducts, new Comparator<Products>() {
+            @Override
+            public int compare(Products key_1, Products key_2) {
+                return (Integer.parseInt(key_1.getSerialNum()) - Integer.parseInt(key_2.getSerialNum()));
+            }
+        });
     }
 
     public void addPriceFilter(){
@@ -245,7 +251,7 @@ public class ProductsViewBean implements Serializable {
             }
         }
 
-        if (priceCriteria.equals("<10")) {
+        else if (priceCriteria.equals("<10")) {
             for (int i = 0; i < purchasedProducts.size(); i++) {
                 Products products = purchasedProducts.get(i);
                 if (products.getPricePerUnit() < 10.0) {
@@ -271,70 +277,6 @@ public class ProductsViewBean implements Serializable {
             }
         }
     }
-
-    public void addTableFilter(){
-        filteredProducts.clear();
-
-        if(priceCriteria.equals("all") && nameCriteria.equals("")){
-            setFilteredProducts(getPurchasedProducts());
-            Collections.sort(filteredProducts, new Comparator<Products>() {
-                @Override
-                public int compare(Products key_1, Products key_2) {
-                    return (Integer.parseInt(key_1.getSerialNum()) - Integer.parseInt(key_2.getSerialNum()));
-                }
-            });
-            return;
-        }
-
-        Collections.sort(filteredProducts, new Comparator<Products>() {
-            @Override
-            public int compare(Products key_1, Products key_2) {
-                return (int) (key_1.getPricePerUnit() - key_2.getPricePerUnit());
-            }
-        });
-
-        if (priceCriteria.equals(">=10")) {
-            for (int i = 0; i < purchasedProducts.size(); i++) {
-                Products products = purchasedProducts.get(i);
-                if (products.getPricePerUnit() >= 10.0) {
-                    filteredProducts.add(purchasedProducts.get(i));
-                }
-            }
-        }
-
-        if (priceCriteria.equals("<10")) {
-            for (int i = 0; i < purchasedProducts.size(); i++) {
-                Products products = purchasedProducts.get(i);
-                if (products.getPricePerUnit() < 10) {
-                    filteredProducts.add(purchasedProducts.get(i));
-                }
-            }
-        }
-
-        if(!nameCriteria.equals("")){
-            String[] temp;
-            String filter = "";
-            if(nameCriteria.contains("%")){
-                temp = nameCriteria.split("%");
-                filter = temp[0];
-            } else {
-                filter = nameCriteria;
-            }
-
-            for (int i = 0; i < purchasedProducts.size(); i++) {
-                Products products = purchasedProducts.get(i);
-                if (products.getProductName().contains(filter)) {
-                    filteredProducts.add(purchasedProducts.get(i));
-                }
-            }
-        }
-
-        else {
-            setFilteredProducts(getPurchasedProducts());
-        }
-        table.setFirst(0);
-    }
-
     public void setFilteredProducts(ArrayList<Products> newFiltered) {
         filteredProducts.clear();
         filteredProducts.addAll(newFiltered);
