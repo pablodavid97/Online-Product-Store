@@ -8,10 +8,7 @@ public class Products {
     private int purchaseNum;
     private double totalPrice;
     private String amountStr;
-
-
     private String errorStr;
-
 
     public String getErrorStr() {
         String errorCopy = errorStr;
@@ -38,7 +35,6 @@ public class Products {
     }
 
     public void setAmountStr(String newAmt){
-        System.out.println("ENTERED AMTSTR VALIDATION!");
         int purchaseNum = 0;
         if(isInteger(newAmt) && !newAmt.equals("")){
             purchaseNum = Integer.parseInt(newAmt);

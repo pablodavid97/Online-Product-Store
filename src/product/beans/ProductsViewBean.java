@@ -82,7 +82,6 @@ public class ProductsViewBean implements Serializable {
     }
 
     public void setPurchasedProducts(ArrayList<Products> purchasedProducts) {
-        //this.purchasedProducts.addAll(purchasedProducts);
         this.purchasedProducts = new ArrayList<>(purchasedProducts);
     }
 
@@ -106,18 +105,9 @@ public class ProductsViewBean implements Serializable {
         }
 
         setErrorString(getAllErrors());
-
-//        User user = new User(sessionId, purchasedProducts);
-//        if(!productsBean.getUsers().contains(user)){
-//            productsBean.getUsers().add(user);
-//            System.out.println("Users");
-//            System.out.println(productsBean.getUsers());
-//        }
     }
 
     public void viewProductData(){
-//        System.out.println("user");
-//        System.out.println(username);
 
         System.out.println("Products");
         for(Products p: purchasedProducts){
@@ -125,28 +115,26 @@ public class ProductsViewBean implements Serializable {
         }
     }
 
-    /*
-    public void viewProductData(){
-//        System.out.println("user");
-//        System.out.println(username);
-
-        System.out.println("Products");
-        for(Products p: productsBean.getProductData()){
-            System.out.println(getTotalPrice());
-        }
-    }
-    */
-
     public String doPurchase(){
         ArrayList<Products> invalidProducts = productsBean.validatePurchase(getPurchasedProducts());
         String action;
         userManager.getLastPurchase().clear();
+        boolean atLeast1Item = false;
         if (invalidProducts.size() == 0) {
-            for(Products p: purchasedProducts){
-                if(p.getPurchaseNum() > 0)
+            for(Products p: purchasedProducts) {
+                if (p.getPurchaseNum() > 0){
                     userManager.getLastPurchase().add(p);
+                    atLeast1Item = true;
+                }
             }
-            action = "purchasedItems";
+            if (atLeast1Item){
+                action = "purchasedItems";
+                userManager.getPurchases().add(userManager.getLastPurchase());
+            }
+            else {
+                setErrorString("You need to add at least 1 item in order to make a purchase.");
+                action = null;
+            }
         }
 
         else {
@@ -309,14 +297,12 @@ public class ProductsViewBean implements Serializable {
             for (int i = 0; i < purchasedProducts.size(); i++) {
                 Products products = purchasedProducts.get(i);
                 if (products.getPricePerUnit() >= 10.0) {
-                    System.out.println("PROD" + products.getProductName() +"FITS");
                     filteredProducts.add(purchasedProducts.get(i));
                 }
             }
         }
 
         if (priceCriteria.equals("<10")) {
-            System.out.println("ENTERED <10 SECTION");
             for (int i = 0; i < purchasedProducts.size(); i++) {
                 Products products = purchasedProducts.get(i);
                 if (products.getPricePerUnit() < 10) {
@@ -344,7 +330,6 @@ public class ProductsViewBean implements Serializable {
         }
 
         else {
-            System.out.println("ENTERED HERE MY DAWG");
             setFilteredProducts(getPurchasedProducts());
         }
         table.setFirst(0);
